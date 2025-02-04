@@ -1,0 +1,7 @@
+pandas
+duckdb
+deltalake
+boto3
+jupyterlab
+pydantic
+python-dotenv
