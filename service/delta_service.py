@@ -1,12 +1,13 @@
 from deltalake import DeltaTable, write_deltalake
 from model.config_variables import ConfigVariables
+from utils.date_utils import get_yesterday_date
 
 
 class DeltaService:
     def __init__(self, config: ConfigVariables):
         self._config = config
-
         self._aws_credentials = self._config.get_aws_credentials()
+        self._yesterday_date = get_yesterday_date()
 
     def write_delta_buckets(
             self,
@@ -16,7 +17,8 @@ class DeltaService:
             write_mode,
             schema_mode=None
     ):
-        uri = f"s3://{bucket_name}/delta-operations/{table_name}"
+        uri = (f"s3://{bucket_name}/delta-operations/"
+               f"{self._yesterday_date}/{table_name}")
 
         if schema_mode:
             write_deltalake(
@@ -34,8 +36,14 @@ class DeltaService:
                 storage_options=self._aws_credentials
             )
 
-    def read_deltalake(self, bucket_name, table_name):
+    def read_deltalake(self, bucket_name, table_name, return_to_df: bool = False):
+        uri = (f"s3://{bucket_name}/delta-operations/"
+               f"{self._yesterday_date}/{table_name}")
+        delta_table = DeltaTable(
+            table_uri=uri, storage_options=self._aws_credentials
+        )
 
-        uri = f"s3://{bucket_name}/delta-operations/{table_name}"
-        delta_table = DeltaTable(table_uri=uri, storage_options=self._aws_credentials)
+        if return_to_df:
+            return delta_table.to_pandas()
+
         return delta_table
