@@ -1,0 +1,1 @@
+LOCAL_FOLDER_DATASETS = "../datasets/"
