@@ -3,7 +3,6 @@ from typing import Optional, List
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
