@@ -51,7 +51,8 @@ class SilverIngestionProcessor:
             self._config.buckets.bronze, "stores", True
         )
 
-        orders_sales = self._connection.sql(""""
+        orders_sales = self._connection.sql(
+            """"
                  SELECT 
                     P.product_id
                     ,p.product_name
@@ -78,38 +79,34 @@ class SilverIngestionProcessor:
                 LEFT JOIN staffs_delta S ON S.staff_id = O.staff_id 
                 LEFT JOIN stores_delta ST ON ST.store_id = O.store_id
                 ;
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.silver,
-            orders_sales,
-            "orders_sales",
-            "append"
+            self._config.buckets.silver, orders_sales, "orders_sales", "append"
         )
-
 
         # silver para base stocks
 
-        stocks_snapshot = self._connection.sql("""
+        stocks_snapshot = self._connection.sql(
+            """
                     SELECT *, current_date as dt_stock from stocks_delta
         
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.silver,
-            stocks_snapshot,
-            "stocks_snapshot",
-            "append"
+            self._config.buckets.silver, stocks_snapshot, "stocks_snapshot", "append"
         )
 
         ### incremental para orders_sales
 
         orders_sales_bronze_delta = self._delta.read_deltalake(
-            self._config.buckets.silver,
-            "orders_sales", True
+            self._config.buckets.silver, "orders_sales", True
         )
 
-        orders_sales = self._connection.sql(""""
+        orders_sales = self._connection.sql(
+            """"
                         WITH orders_sales_bronze as (
                          SELECT 
                             P.product_id
@@ -145,14 +142,10 @@ class SilverIngestionProcessor:
                          select * from orders_sales_bronze
                          where order_sate > (select order_date from dt_orders_sales)          
                         ;
-                """).to_df()
+                """
+        ).to_df()
 
         if len(orders_sales) > 0:
             self._delta.write_delta_buckets(
-                self._config.buckets.silver,
-                orders_sales,
-                "orders_sales",
-                "append"
+                self._config.buckets.silver, orders_sales, "orders_sales", "append"
             )
-
-

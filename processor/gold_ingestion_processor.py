@@ -19,7 +19,8 @@ class GoldIngestionProcessor:
         )
 
         ### dim products
-        dim_products = self._connection.sql("""
+        dim_products = self._connection.sql(
+            """
             WITH products as (
             SELECT DISTINCT
                 product_id,
@@ -40,17 +41,16 @@ class GoldIngestionProcessor:
             )
             
             SELECT * FROM sk_products
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_products,
-            "dim_products",
-            "append"
+            self._config.buckets.gold, dim_products, "dim_products", "append"
         )
 
         ### dim customers
-        dim_customers = self._connection.sql("""
+        dim_customers = self._connection.sql(
+            """
                     WITH customers as (
                     SELECT DISTINCT
                         customers_id,
@@ -67,17 +67,16 @@ class GoldIngestionProcessor:
                     )
 
                     SELECT * FROM sk_customers
-                """).to_df()
+                """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_customers,
-            "dim_customers",
-            "append"
+            self._config.buckets.gold, dim_customers, "dim_customers", "append"
         )
 
         ### dim staffs
-        dim_staffs = self._connection.sql("""
+        dim_staffs = self._connection.sql(
+            """
                             WITH staffs as (
                             SELECT DISTINCT
                                 staff_id,
@@ -94,17 +93,16 @@ class GoldIngestionProcessor:
                             )
 
                             SELECT * FROM sk_staff
-                        """).to_df()
+                        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_staffs,
-            "dim_staffs",
-            "append"
+            self._config.buckets.gold, dim_staffs, "dim_staffs", "append"
         )
 
         ### dim stores
-        dim_stores = self._connection.sql("""
+        dim_stores = self._connection.sql(
+            """
                                     WITH stores as (
                                     SELECT DISTINCT
                                         store_id,
@@ -121,17 +119,16 @@ class GoldIngestionProcessor:
                                     )
 
                                     SELECT * FROM sk_store
-                                """).to_df()
+                                """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_stores,
-            "dim_stores",
-            "append"
+            self._config.buckets.gold, dim_stores, "dim_stores", "append"
         )
 
         ### dim tempo
-        dim_date = self._connection.sql("""
+        dim_date = self._connection.sql(
+            """
             with tempo as
             (
             select 
@@ -149,13 +146,11 @@ class GoldIngestionProcessor:
                 from tempo
             )
             select * from sk_date
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_date,
-            "dim_date",
-            "append"
+            self._config.buckets.gold, dim_date, "dim_date", "append"
         )
 
         ### fato sales
@@ -180,7 +175,8 @@ class GoldIngestionProcessor:
             self._config.buckets.gold, "dim_date", True
         )
 
-        fact_sales = self._connection.sql("""
+        fact_sales = self._connection.sql(
+            """
             SELECT 
                P.product_sk
                ,C.customer_sk
@@ -199,13 +195,11 @@ class GoldIngestionProcessor:
             LEFT JOIN dim_staffs ST ON OS.staff_id  = ST.staff_id
             LEFT JOIN dim_stores S ON OS.store_id = S.store_id
             LEFT JOIN dim_date D ON cast(strftime(OS.order_date, '%Y%m%d') as int) = D.date_id
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            fact_sales,
-            "fact_sales",
-            "append"
+            self._config.buckets.gold, fact_sales, "fact_sales", "append"
         )
 
         ### fato stocks
@@ -214,7 +208,8 @@ class GoldIngestionProcessor:
             self._config.buckets.silver, "stocks_snapshot", True
         )
 
-        fact_stocks = self._connection.sql("""
+        fact_stocks = self._connection.sql(
+            """
             SELECT
                 P.product_sk,
                 S.store_sk,
@@ -224,18 +219,9 @@ class GoldIngestionProcessor:
             LEFT JOIN dim_products P ON SS.product_id = P.product_id
             LEFT JOIN dim_stores S ON SS.store_id = S.store_id
             LEFT JOIN dim_date D ON cast(strftime(SS.dt_stock, '%Y%m%d') as int) = D.date_id
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            fact_stocks,
-            "fact_stocks",
-            "append"
+            self._config.buckets.gold, fact_stocks, "fact_stocks", "append"
         )
-
-
-
-
-
-
-
