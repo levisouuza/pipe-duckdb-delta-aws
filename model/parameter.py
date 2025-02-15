@@ -1,7 +1,19 @@
 from typing import Optional
 from pydantic import BaseModel
+from enum import Enum
+
+
+class IncrementalInsertLoadType(Enum):
+    MERGE = "merge"
+    SQL = "sql"
+
 
 class Parameter(BaseModel):
-    table_name: Optional[str]
-    first_load: Optional[bool]
-    increment_load_type: Optional[str]
+    uri_s3_table: Optional[str] = None
+    table_name: Optional[str] = None
+    layer: Optional[str] = None
+    first_load: Optional[bool] = None
+    increment_insert_load_type: Optional[IncrementalInsertLoadType]
+    bucket_name_script_sql_path: Optional[str] = None
+    sql_script_path: Optional[str] = None
+    replace_uri: Optional[bool] = False

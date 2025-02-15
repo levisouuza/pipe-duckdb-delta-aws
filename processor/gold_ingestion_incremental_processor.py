@@ -21,7 +21,8 @@ class GoldIngestionIncrementalProcessor:
         )
 
         ### dim products
-        dim_products = self._connection.sql("""
+        dim_products = self._connection.sql(
+            """
             WITH products as (
             SELECT DISTINCT
                 product_id,
@@ -47,14 +48,12 @@ class GoldIngestionIncrementalProcessor:
             SELECT * FROM sk_products
             WHERE product_id NOT IN (SELECT product_id FROM dlt_gold_products)
             
-        """).to_df()
+        """
+        ).to_df()
 
         if len(dim_products) > 0:
             self._delta.write_delta_buckets(
-                self._config.buckets.gold,
-                dim_products,
-                "dim_products",
-                "append"
+                self._config.buckets.gold, dim_products, "dim_products", "append"
             )
 
         ### dim customers
@@ -63,7 +62,8 @@ class GoldIngestionIncrementalProcessor:
             self._config.buckets.gold, "dim_customers", True
         )
 
-        dim_customers = self._connection.sql("""
+        dim_customers = self._connection.sql(
+            """
                     WITH customers as (
                     SELECT DISTINCT
                         customers_id,
@@ -85,13 +85,11 @@ class GoldIngestionIncrementalProcessor:
                     SELECT * FROM sk_customers
                     WHERE customers_id NOT IN (SELECT customers_id FROM dlt_gold_customers)
                         
-                """).to_df()
+                """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_customers,
-            "dim_customers",
-            "append"
+            self._config.buckets.gold, dim_customers, "dim_customers", "append"
         )
 
         ### dim staffs
@@ -99,7 +97,8 @@ class GoldIngestionIncrementalProcessor:
         delta_gold_staff = self._delta.read_deltalake(
             self._config.buckets.gold, "dim_staffs", True
         )
-        dim_staffs = self._connection.sql("""
+        dim_staffs = self._connection.sql(
+            """
                             WITH staffs as (
                             SELECT DISTINCT
                                 staff_id,
@@ -120,13 +119,11 @@ class GoldIngestionIncrementalProcessor:
                             
                             SELECT * FROM sk_staff
                             WHERE staff_id NOT IN (SELECT customers_id FROM dlt_gold_staff)
-                        """).to_df()
+                        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_staffs,
-            "dim_staffs",
-            "append"
+            self._config.buckets.gold, dim_staffs, "dim_staffs", "append"
         )
 
         ### dim stores
@@ -135,7 +132,8 @@ class GoldIngestionIncrementalProcessor:
             self._config.buckets.gold, "dim_stores", True
         )
 
-        dim_stores = self._connection.sql("""
+        dim_stores = self._connection.sql(
+            """
                                     WITH stores as (
                                     SELECT DISTINCT
                                         store_id,
@@ -156,13 +154,11 @@ class GoldIngestionIncrementalProcessor:
                                     
                                     SELECT * FROM sk_store
                                     WHERE store_id NOT IN (SELECT store_id FROM dlt_gold_store)
-                                """).to_df()
+                                """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            dim_stores,
-            "dim_stores",
-            "append"
+            self._config.buckets.gold, dim_stores, "dim_stores", "append"
         )
 
         ### fato sales
@@ -171,7 +167,8 @@ class GoldIngestionIncrementalProcessor:
             self._config.buckets.gold, "fact_sales", True
         )
 
-        fact_sales = self._connection.sql("""
+        fact_sales = self._connection.sql(
+            """
             SELECT 
                P.product_sk
                ,C.customer_sk
@@ -191,13 +188,11 @@ class GoldIngestionIncrementalProcessor:
             LEFT JOIN dim_stores S ON OS.store_id = S.store_id
             LEFT JOIN dim_date D ON cast(strftime(OS.order_date, '%Y%m%d') as int) = D.date_id
             WHERE OS.order_date > (SELECT MAX(order_date) FROM delta_gold_fact_sales)
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            fact_sales,
-            "fact_sales",
-            "append"
+            self._config.buckets.gold, fact_sales, "fact_sales", "append"
         )
 
         ### fato stocks
@@ -210,7 +205,8 @@ class GoldIngestionIncrementalProcessor:
             self._config.buckets.gold, "dim_date", True
         )
 
-        fact_stocks = self._connection.sql("""
+        fact_stocks = self._connection.sql(
+            """
             SELECT
                 P.product_sk,
                 S.store_sk,
@@ -225,18 +221,9 @@ class GoldIngestionIncrementalProcessor:
             FROM delta_gold_fact_stocks FS
             LEFT JOIN dim_date D ON FS.date_sk = D.date_sk
             );
-        """).to_df()
+        """
+        ).to_df()
 
         self._delta.write_delta_buckets(
-            self._config.buckets.gold,
-            fact_stocks,
-            "fact_stocks",
-            "append"
+            self._config.buckets.gold, fact_stocks, "fact_stocks", "append"
         )
-
-
-
-
-
-
-

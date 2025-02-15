@@ -24,12 +24,16 @@ class ConfigVariables(BaseSettings):
     http_retries: Optional[int]
     http_retry_backoff: Optional[int]
 
-
     @classmethod
     def parse_buckets(cls, values):
         if isinstance(values.get("buckets"), str):
             try:
-                return {**values, "buckets": Buckets(**json.loads(values["buckets"].replace("'", '"')))}
+                return {
+                    **values,
+                    "buckets": Buckets(
+                        **json.loads(values["buckets"].replace("'", '"'))
+                    ),
+                }
             except json.JSONDecodeError as error:
                 raise ValueError(f"Erro ao decodificar JSON dos buckets: {error}")
         return values
@@ -38,5 +42,5 @@ class ConfigVariables(BaseSettings):
         return {
             "AWS_ACCESS_KEY_ID": self.aws_access_key_id,
             "AWS_SECRET_ACCESS_KEY": self.aws_secret_access_key,
-            "AWS_REGION": self.aws_region
+            "AWS_REGION": self.aws_region,
         }
