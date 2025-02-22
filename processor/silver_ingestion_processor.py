@@ -1,16 +1,28 @@
+import json
 from model.config_variables import ConfigVariables
 from config.duckdb_config import DuckDbConfig
+from model.parameter import Parameter
 from service.delta_service import DeltaService
-from utils.date_utils import get_yesterday_date
-from constants.constants import TABLES
+from service.s3_service import S3Service
+from service.ssm_service import SsmService
+from constants.constants import TABLES_SILVER
+from factory.increment_insert_load_factory import IncrementInsertLoadFactory
+
+
+LAYER = "silver"
 
 
 class SilverIngestionProcessor:
     def __init__(self, config: ConfigVariables):
         self._config = config
+        self._ssm_service = SsmService(self._config)
+
         self._duckdb = DuckDbConfig(self._config)
         self._duckdb.create_connection_duckdb()
         self._connection = self._duckdb.connection
+
+        self._s3_service = S3Service(self._config)
+
         self._delta = DeltaService(self._config)
 
     def write_delta_silver_layer(self):
@@ -51,101 +63,34 @@ class SilverIngestionProcessor:
             self._config.buckets.bronze, "stores", True
         )
 
-        orders_sales = self._connection.sql(
-            """"
-                 SELECT 
-                    P.product_id
-                    ,p.product_name
-                    ,B.brand_name
-                    ,CT.category_name
-                    ,C.customer_id
-                    ,C.first_name || C.last_name AS customer_name
-                    ,S.staff_id
-                    ,S.first_name || S.last_name AS staff_name
-                    ,ST.store_id
-                    ,ST.store_name
-                    ,OI.order_id
-                    ,OI.item_id
-                    ,O.order_date
-                    ,OI.quantity
-                    ,OI.list_price
-                    ,OI.discount
-                FROM order_items_delta OI 
-                LEFT JOIN orders_delta O ON OI.order_id = O.order_id
-                LEFT JOIN products_delta P ON P.product_id = OI.product_id
-                LEFT JOIN brands_delta B ON P.brand_id = B.brand_id
-                LEFT JOIN categories_delta CT ON P.category_id = CT.category_id
-                LEFT JOIN customers_delta C ON C.customer_id = O.customer_id
-                LEFT JOIN staffs_delta S ON S.staff_id = O.staff_id 
-                LEFT JOIN stores_delta ST ON ST.store_id = O.store_id
-                ;
-        """
-        ).to_df()
 
-        self._delta.write_delta_buckets(
-            self._config.buckets.silver, orders_sales, "orders_sales", "append"
-        )
+        for table in TABLES_SILVER:
 
-        # silver para base stocks
+            print(f"Start processing bronze ingestion table: {table}")
 
-        stocks_snapshot = self._connection.sql(
-            """
-                    SELECT *, current_date as dt_stock from stocks_delta
-        
-        """
-        ).to_df()
-
-        self._delta.write_delta_buckets(
-            self._config.buckets.silver, stocks_snapshot, "stocks_snapshot", "append"
-        )
-
-        ### incremental para orders_sales
-
-        orders_sales_bronze_delta = self._delta.read_deltalake(
-            self._config.buckets.silver, "orders_sales", True
-        )
-
-        orders_sales = self._connection.sql(
-            """"
-                        WITH orders_sales_bronze as (
-                         SELECT 
-                            P.product_id
-                            ,p.product_name
-                            ,B.brand_name
-                            ,CT.category_name
-                            ,C.customer_id
-                            ,C.first_name || C.last_name AS customer_name
-                            ,S.staff_id
-                            ,S.first_name || S.last_name AS staff_name
-                            ,ST.store_id
-                            ,ST.store_name
-                            ,OI.order_id
-                            ,OI.item_id
-                            ,O.order_date
-                            ,OI.quantity
-                            ,OI.list_price
-                            ,OI.discount
-                        FROM order_items_delta OI 
-                        LEFT JOIN orders_delta O ON OI.order_id = O.order_id
-                        LEFT JOIN products_delta P ON P.product_id = OI.product_id
-                        LEFT JOIN brands_delta B ON P.brand_id = B.brand_id
-                        LEFT JOIN categories_delta CT ON P.category_id = CT.category_id
-                        LEFT JOIN customers_delta C ON C.customer_id = O.customer_id
-                        LEFT JOIN staffs_delta S ON S.staff_id = O.staff_id 
-                        LEFT JOIN stores_delta ST ON ST.store_id = O.store_id
-                        ), 
-                        dt_orders_sales as 
-                        (
-                            select max(order_date) as order_date from orders_sales_bronze_delta
-                        )
-                        
-                         select * from orders_sales_bronze
-                         where order_sate > (select order_date from dt_orders_sales)          
-                        ;
-                """
-        ).to_df()
-
-        if len(orders_sales) > 0:
-            self._delta.write_delta_buckets(
-                self._config.buckets.silver, orders_sales, "orders_sales", "append"
+            _parameter = Parameter.parse_obj(
+                json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
+
+            sql_query = self._s3_service.get_sql_file_from_s3(
+                _parameter.bucket_name_script_sql_path,
+                _parameter.sql_script_path
+            )
+
+            dataframe = self._connection.sql(sql_query).to_df()
+
+            if _parameter.first_load:
+                print("First Load")
+                self._delta.write_delta_buckets(
+                    self._config.buckets.silver, dataframe, _parameter.table_name, "append"
+                )
+
+            else:
+                print("Incremental Load")
+                incremental_load = (
+                    IncrementInsertLoadFactory.get_increment_insert_load_service(
+                        _parameter, self._config, self._delta, self._s3_service, self._connection
+                    )
+                )
+
+                incremental_load.execute(dataframe=dataframe)

@@ -12,10 +12,16 @@ class IncrementalInsertLoadSqlService(IncrementalInsertLoadService):
         super().__init__(parameter, config, delta_service, s3_service, duck_connection)
 
     def execute(self, dataframe = None, delta_table = None):
+        print("reading delta lake table")
         table_delta_df = self.delta_service.read_deltalake(
             self.config.buckets.bronze, self.parameter.table_name, return_to_df=True
         )
 
+        print(
+            f"get query s3 path. "
+            f"bucket:{self.parameter.bucket_name_script_sql_path} and "
+            f"path: {self.parameter.sql_script_path}"
+        )
         sql_query = self.s3_service.get_sql_file_from_s3(
             self.parameter.bucket_name_script_sql_path,
             self.parameter.sql_script_path
@@ -23,6 +29,8 @@ class IncrementalInsertLoadSqlService(IncrementalInsertLoadService):
 
         if self.parameter.replace_uri:
             sql_query = sql_query.replace('{uri}', self.parameter.uri_s3_table)
+
+        print(f"Query to be executed: {sql_query}")
 
         increment_data_df = self.duck_connection.sql(sql_query).to_df()
 

@@ -17,9 +17,9 @@ class IncrementalInsertLoadMergeService(IncrementalInsertLoadService):
             self.config.buckets.bronze, self.parameter.table_name
         )
 
-        self.execute_merge(table_delta_response, dataframe)
+        self._execute_merge(table_delta_response, dataframe)
 
-    def execute_merge(self, table_delta, dataframe):
+    def _execute_merge(self, table_delta, dataframe):
 
         column = self._build_column_key_value_predicate()
 

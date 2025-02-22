@@ -44,16 +44,3 @@ class DeltaService:
             return delta_table.to_pandas()
 
         return delta_table
-
-    @staticmethod
-    def insert_when_not_match_keys(delta_table, dataframe, column_key):
-        (
-            delta_table.merge(
-                source=dataframe,
-                predicate=f"target.{column_key}_id = source.{column_key}_id",
-                source_alias="source",
-                target_alias="target",
-            )
-            .when_not_matched_insert_all()
-            .execute()
-        )

@@ -1,18 +1,18 @@
 import json
-
-from constants.constants import TABLES_BRONZE
-from model.parameter import Parameter
 from model.config_variables import ConfigVariables
 from config.duckdb_config import DuckDbConfig
+from model.parameter import Parameter
 from service.delta_service import DeltaService
 from service.s3_service import S3Service
 from service.ssm_service import SsmService
+from constants.constants import TABLES_GOLD_FACTS
 from factory.increment_insert_load_factory import IncrementInsertLoadFactory
 
-LAYER = "bronze"
+
+LAYER = "gold"
 
 
-class BronzeIngestionProcessor:
+class GoldFactsIngestionProcessor:
     def __init__(self, config: ConfigVariables):
         self._config = config
         self._ssm_service = SsmService(self._config)
@@ -25,31 +25,46 @@ class BronzeIngestionProcessor:
 
         self._delta = DeltaService(self._config)
 
-    def write_delta_bronze_layer(self):
-        for table in TABLES_BRONZE:
+    def write_delta_gold_layer(self):
+        dim_products = self._delta.read_deltalake(
+            self._config.buckets.bronze, "dim_products", True
+        )
+
+        dim_customers = self._delta.read_deltalake(
+            self._config.buckets.bronze, "dim_customers", True
+        )
+
+        dim_staffs = self._delta.read_deltalake(
+            self._config.buckets.bronze, "dim_staffs", True
+        )
+
+        dim_stores = self._delta.read_deltalake(
+            self._config.buckets.bronze, "dim_stores", True
+        )
+
+        dim_date = self._delta.read_deltalake(
+            self._config.buckets.bronze, "dim_date", True
+        )
+
+        for table in TABLES_GOLD_FACTS:
+
             print(f"Start processing bronze ingestion table: {table}")
 
             _parameter = Parameter.parse_obj(
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-            uri = (
-                f"s3://{self._config.buckets.stage}/"
-                f"delta-operations/{table}"
+            sql_query = self._s3_service.get_sql_file_from_s3(
+                _parameter.bucket_name_script_sql_path,
+                _parameter.sql_script_path
             )
 
-            print(f"uri stage path: {uri}")
-
-            _parameter.uri_s3_table = uri
-
-            dataframe = self._connection.sql(
-                f"select * from read_csv('{_parameter.uri_s3_table}/{table}.csv')"
-            ).to_df()
+            dataframe = self._connection.sql(sql_query).to_df()
 
             if _parameter.first_load:
                 print("First Load")
                 self._delta.write_delta_buckets(
-                    self._config.buckets.bronze, dataframe, table, "append"
+                    self._config.buckets.silver, dataframe, _parameter.table_name, "append"
                 )
 
             else:
@@ -61,9 +76,3 @@ class BronzeIngestionProcessor:
                 )
 
                 incremental_load.execute(dataframe=dataframe)
-
-        self._connection.close()
-
-_config = ConfigVariables()  # noqa
-stage_processor = BronzeIngestionProcessor(_config)
-stage_processor.write_delta_bronze_layer()

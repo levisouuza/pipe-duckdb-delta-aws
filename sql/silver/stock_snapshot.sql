@@ -1,0 +1,1 @@
+SELECT *, current_date as dt_stock from stocks_delta
