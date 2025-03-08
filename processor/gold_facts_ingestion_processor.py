@@ -6,7 +6,6 @@ from service.delta_service import DeltaService
 from service.s3_service import S3Service
 from service.ssm_service import SsmService
 from constants.constants import TABLES_GOLD_FACTS
-from factory.increment_insert_load_factory import IncrementInsertLoadFactory
 
 
 LAYER = "gold"
@@ -26,53 +25,84 @@ class GoldFactsIngestionProcessor:
         self._delta = DeltaService(self._config)
 
     def write_delta_gold_layer(self):
+
+        print(f"Extract orders_sales silver layer delta table")
+        orders_sales = self._delta.read_deltalake(
+            self._config.buckets.silver, "orders_sales", True
+        )
+
+        print(f"Extract stocks_snapshot silver layer delta table")
+        stocks_snapshot = self._delta.read_deltalake(
+            self._config.buckets.silver, "stocks_snapshot", True
+        )
+
+        print(f"Extract dim_products gold layer delta table")
         dim_products = self._delta.read_deltalake(
-            self._config.buckets.bronze, "dim_products", True
+            self._config.buckets.gold, "dim_products", True
         )
 
+        print(f"Extract dim_customers gold layer delta table")
         dim_customers = self._delta.read_deltalake(
-            self._config.buckets.bronze, "dim_customers", True
+            self._config.buckets.gold, "dim_customers", True
         )
 
+        print(f"Extract dim_staffs gold layer delta table")
         dim_staffs = self._delta.read_deltalake(
-            self._config.buckets.bronze, "dim_staffs", True
+            self._config.buckets.gold, "dim_staffs", True
         )
 
+        print(f"Extract dim_stores gold layer delta table")
         dim_stores = self._delta.read_deltalake(
-            self._config.buckets.bronze, "dim_stores", True
+            self._config.buckets.gold, "dim_stores", True
         )
 
+        print(f"Extract dim_date gold layer delta table")
         dim_date = self._delta.read_deltalake(
-            self._config.buckets.bronze, "dim_date", True
+            self._config.buckets.gold, "dim_date", True
         )
 
         for table in TABLES_GOLD_FACTS:
 
-            print(f"Start processing bronze ingestion table: {table}")
+            print(f"Start processing gold ingestion table: {table}")
 
             _parameter = Parameter.parse_obj(
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-            sql_query = self._s3_service.get_sql_file_from_s3(
-                _parameter.bucket_name_script_sql_path,
-                _parameter.sql_script_path
-            )
-
-            dataframe = self._connection.sql(sql_query).to_df()
-
             if _parameter.first_load:
                 print("First Load")
+
+                sql_query = self._s3_service.get_sql_file_from_s3(
+                    _parameter.bucket_name, _parameter.sql_script_path
+                )
+
+                dataframe = self._connection.sql(sql_query).to_df()
+
                 self._delta.write_delta_buckets(
-                    self._config.buckets.silver, dataframe, _parameter.table_name, "append"
+                    self._config.buckets.gold,
+                    dataframe,
+                    _parameter.table_name,
+                    "append",
                 )
 
-            else:
+                print("Finish first load")
+
+            if not _parameter.first_load and _parameter.table_name not in "dim_date":
                 print("Incremental Load")
-                incremental_load = (
-                    IncrementInsertLoadFactory.get_increment_insert_load_service(
-                        _parameter, self._config, self._delta, self._s3_service, self._connection
-                    )
+
+                delta_gold_fact = self._delta.read_deltalake(
+                    self._config.buckets.gold, _parameter.table_name, True
                 )
 
-                incremental_load.execute(dataframe=dataframe)
+                sql_query = self._s3_service.get_sql_file_from_s3(
+                    _parameter.bucket_name, _parameter.sql_script_path_incremental
+                )
+
+                dataframe = self._connection.sql(sql_query).to_df()
+
+                self._delta.write_data_incremental_delta(_parameter, dataframe)
+
+
+_config = ConfigVariables()  # noqa
+gold_facts_processor = GoldFactsIngestionProcessor(_config)
+gold_facts_processor.write_delta_gold_layer()

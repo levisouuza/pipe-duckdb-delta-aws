@@ -30,6 +30,7 @@ class GoldDimensionsIngestionProcessor:
             f"reading delta lake table orders_sales "
             f"in bucket {self._config.buckets.silver}"
         )
+
         orders_sales = self._delta.read_deltalake(
             self._config.buckets.silver, "orders_sales", True
         )
