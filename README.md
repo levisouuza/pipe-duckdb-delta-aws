@@ -3,7 +3,7 @@
 ## Motivação
 O avanço das arquiteturas de dados levou à popularização do conceito de Data Lakehouse, combinando a flexibilidade dos Data Lakes com a governança e desempenho dos Data Warehouses. Tecnologias como **Delta Lake** e **DuckDB** vêm se destacando nesse contexto, oferecendo maior confiabilidade, versionamento de dados e processamento otimizado para análises interativas.
 
-Este projeto surgiu como uma extensão da minha experiência ao realizar o curso de Data Lakehouse com Delta Lake, DuckDB e Azure Data Lake-Gen2. Originalmente, o curso utilizava **Microsoft Azure**, o que representou minha primeira experiência prática com esse provedor de cloud. Como aprimoramento, decidi reconstruir a solução na **AWS**, onde atuo no dia a dia, para oferecer uma alternativa para profissionais que desejam explorar o mesmo conceito em um ambiente diferente.
+Este projeto surgiu como uma extensão da minha experiência ao realizar o curso de [Data Lakehouse com Delta Lake, DuckDB e Azure Data Lake-Gen2](https://www.udemy.com/share/10bWT33@BOBgzoYYhPIzq4NVlNJFeTL06-c0YhU_NBLwfaIs7EbNpWzs0j-gWc-4RNptLrLf/). Originalmente, o curso utilizava **Microsoft Azure**, o que representou minha primeira experiência prática com esse provedor de cloud. Como aprimoramento, decidi reconstruir a solução na **AWS**, onde atuo no dia a dia, para oferecer uma alternativa para profissionais que desejam explorar o mesmo conceito em um ambiente diferente.
 
 Além da migração para AWS, ampliei a solução incorporando outras tecnologias de analytics e aprimorando o código com **boas práticas de engenharia de software**, garantindo maior modularidade, legibilidade e eficiência.
 
