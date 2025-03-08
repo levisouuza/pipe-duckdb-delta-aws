@@ -1,0 +1,9 @@
+{
+  "table_name": "stocks_snapshot" ,
+  "layer": "silver",
+  "first_load": true,
+  "increment_insert_load_type": "sql",
+  "bucket_name": "development-test-levis-silver",
+  "sql_script_path": "sql/stock_snapshot.sql",
+  "incremental_data_df_validate": false
+}

@@ -1,0 +1,8 @@
+{
+  "table_name": "dim_date" ,
+  "layer": "gold",
+  "first_load": false,
+  "increment_insert_load_type": "sql",
+  "bucket_name": "development-test-levis-gold",
+  "sql_script_path": "sql/gold_dimensions/dim_date.sql"
+}

@@ -1,0 +1,9 @@
+{
+  "table_name": "orders_sales" ,
+  "layer": "silver",
+  "first_load": false,
+  "increment_insert_load_type": "sql",
+  "bucket_name": "development-test-levis-silver",
+  "sql_script_path": "sql/orders_sales.sql",
+  "sql_script_path_incremental": "sql/orders_sales_incremental.sql"
+}
