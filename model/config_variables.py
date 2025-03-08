@@ -1,8 +1,9 @@
 import json
-from typing import Optional, List
+from typing import List, Optional
+
+from dotenv import load_dotenv
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -35,7 +36,9 @@ class ConfigVariables(BaseSettings):
                     ),
                 }
             except json.JSONDecodeError as error:
-                raise ValueError(f"Erro ao decodificar JSON dos buckets: {error}")
+                raise ValueError(
+                    f"Erro ao decodificar JSON dos buckets: {error}"
+                )
         return values
 
     def get_aws_credentials(self):

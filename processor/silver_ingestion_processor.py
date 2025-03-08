@@ -1,12 +1,12 @@
 import json
-from model.config_variables import ConfigVariables
+
 from config.duckdb_config import DuckDbConfig
+from constants.constants import TABLES_SILVER
+from model.config_variables import ConfigVariables
 from model.parameter import Parameter
 from service.delta_service import DeltaService
 from service.s3_service import S3Service
 from service.ssm_service import SsmService
-from constants.constants import TABLES_SILVER
-
 
 LAYER = "silver"
 
@@ -26,39 +26,39 @@ class SilverIngestionProcessor:
 
     def write_delta_silver_layer(self):
 
-        brands_delta = self._delta.read_deltalake(
+        brands_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "brands", True
         )
 
-        categories_delta = self._delta.read_deltalake(
+        categories_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "categories", True
         )
 
-        customers_delta = self._delta.read_deltalake(
+        customers_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "customers", True
         )
 
-        order_items_delta = self._delta.read_deltalake(
+        order_items_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "order_items", True
         )
 
-        orders_delta = self._delta.read_deltalake(
+        orders_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "orders", True
         )
 
-        products_delta = self._delta.read_deltalake(
+        products_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "products", True
         )
 
-        staffs_delta = self._delta.read_deltalake(
+        staffs_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "staffs", True
         )
 
-        stocks_delta = self._delta.read_deltalake(
+        stocks_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "stocks", True
         )
 
-        stores_delta = self._delta.read_deltalake(
+        stores_delta = self._delta.read_deltalake(  # noqa
             self._config.buckets.bronze, "stores", True
         )
 
@@ -89,12 +89,13 @@ class SilverIngestionProcessor:
             else:
                 print("Incremental Load")
                 sql_query = self._s3_service.get_sql_file_from_s3(
-                    _parameter.bucket_name, _parameter.sql_script_path_incremental
+                    _parameter.bucket_name,
+                    _parameter.sql_script_path_incremental
                 )
 
-                orders_sales_silver = None
+                orders_sales_silver = None  # noqa
                 if "orders_sales" == _parameter.table_name:
-                    orders_sales_silver = self._delta.read_deltalake(
+                    orders_sales_silver = self._delta.read_deltalake(  # noqa
                         self._config.buckets.silver, "orders_sales", True
                     )
 

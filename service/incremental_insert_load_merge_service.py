@@ -1,7 +1,7 @@
 from model.config_variables import ConfigVariables
 from model.parameter import Parameter
-from service.incremental_insert_load_service import IncrementalInsertLoadService
 from service.delta_service import DeltaService
+from service.incremental_insert_load_service import IncrementalInsertLoadService
 from service.s3_service import S3Service
 
 

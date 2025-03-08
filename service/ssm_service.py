@@ -1,6 +1,7 @@
+from botocore.client import ClientError
+
 from model.config_variables import ConfigVariables
 from service.aws_service import AwsService
-from botocore.client import ClientError
 
 
 class SsmService(AwsService):

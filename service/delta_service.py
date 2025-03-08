@@ -1,4 +1,5 @@
 from deltalake import DeltaTable, write_deltalake
+
 from model.config_variables import ConfigVariables
 from model.parameter import Parameter
 
@@ -54,4 +55,3 @@ class DeltaService:
                 parameter.table_name,
                 "append",
             )
-

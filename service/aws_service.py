@@ -1,4 +1,5 @@
 import boto3
+
 from model.config_variables import ConfigVariables
 
 

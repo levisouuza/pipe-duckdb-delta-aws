@@ -1,5 +1,5 @@
-from service.s3_service import S3Service
 from model.config_variables import ConfigVariables
+from service.s3_service import S3Service
 from utils.files_utils import get_files_in_raw_datasets
 
 

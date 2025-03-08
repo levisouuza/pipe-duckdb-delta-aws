@@ -1,13 +1,13 @@
 import json
 
-from constants.constants import TABLES_BRONZE
-from model.parameter import Parameter
-from model.config_variables import ConfigVariables
 from config.duckdb_config import DuckDbConfig
+from constants.constants import TABLES_BRONZE
+from factory.increment_insert_load_factory import IncrementInsertLoadFactory
+from model.config_variables import ConfigVariables
+from model.parameter import Parameter
 from service.delta_service import DeltaService
 from service.s3_service import S3Service
 from service.ssm_service import SsmService
-from factory.increment_insert_load_factory import IncrementInsertLoadFactory
 
 LAYER = "bronze"
 
@@ -33,14 +33,17 @@ class BronzeIngestionProcessor:
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-            uri = f"s3://{self._config.buckets.stage}/" f"delta-operations/{table}"
+            uri = (
+                f"s3://{self._config.buckets.stage}/delta-operations/{table}"
+            )
 
             print(f"uri stage path: {uri}")
 
             _parameter.uri_s3_table = uri
 
             dataframe = self._connection.sql(
-                f"select * from read_csv('{_parameter.uri_s3_table}/{table}.csv')"
+                f"select * from "
+                f"read_csv('{_parameter.uri_s3_table}/{table}.csv')"
             ).to_df()
 
             if _parameter.first_load:
@@ -52,7 +55,7 @@ class BronzeIngestionProcessor:
             else:
                 print("Incremental Load")
                 incremental_load = (
-                    IncrementInsertLoadFactory.get_increment_insert_load_service(
+                    IncrementInsertLoadFactory.get_increment_insert_load_service(  # noqa
                         _parameter,
                         self._config,
                         self._delta,
