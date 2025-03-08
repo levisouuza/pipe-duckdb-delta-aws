@@ -12,17 +12,19 @@ LAYER = "gold"
 
 
 class GoldFactsIngestionProcessor:
-    def __init__(self, config: ConfigVariables):
+    def __init__(
+        self,
+        config: ConfigVariables,
+        ssm_service: SsmService,
+        connection,
+        s3_service: S3Service,
+        delta_service: DeltaService,
+    ):
         self._config = config
-        self._ssm_service = SsmService(self._config)
-
-        self._duckdb = DuckDbConfig(self._config)
-        self._duckdb.create_connection_duckdb()
-        self._connection = self._duckdb.connection
-
-        self._s3_service = S3Service(self._config)
-
-        self._delta = DeltaService(self._config)
+        self._ssm_service = ssm_service
+        self._connection = connection
+        self._s3_service = s3_service
+        self._delta = delta_service
 
     def write_delta_gold_layer(self):
 
@@ -87,10 +89,7 @@ class GoldFactsIngestionProcessor:
 
                 print("Finish first load")
 
-            if (
-                    not _parameter.first_load
-                    and _parameter.table_name not in "dim_date"
-            ):
+            if not _parameter.first_load and _parameter.table_name not in "dim_date":
                 print("Incremental Load")
 
                 delta_gold_fact = self._delta.read_deltalake(  # noqa
@@ -98,15 +97,9 @@ class GoldFactsIngestionProcessor:
                 )
 
                 sql_query = self._s3_service.get_sql_file_from_s3(
-                    _parameter.bucket_name,
-                    _parameter.sql_script_path_incremental
+                    _parameter.bucket_name, _parameter.sql_script_path_incremental
                 )
 
                 dataframe = self._connection.sql(sql_query).to_df()
 
                 self._delta.write_data_incremental_delta(_parameter, dataframe)
-
-
-_config = ConfigVariables()  # noqa
-gold_facts_processor = GoldFactsIngestionProcessor(_config)
-gold_facts_processor.write_delta_gold_layer()

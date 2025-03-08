@@ -1,6 +1,6 @@
 import json
 
-from config.duckdb_config import DuckDbConfig
+
 from constants.constants import TABLES_GOLD_DIMENSIONS
 from model.config_variables import ConfigVariables
 from model.parameter import Parameter
@@ -12,17 +12,19 @@ LAYER = "gold"
 
 
 class GoldDimensionsIngestionProcessor:
-    def __init__(self, config: ConfigVariables):
+    def __init__(
+        self,
+        config: ConfigVariables,
+        ssm_service: SsmService,
+        connection,
+        s3_service: S3Service,
+        delta_service: DeltaService,
+    ):
         self._config = config
-        self._ssm_service = SsmService(self._config)
-
-        self._duckdb = DuckDbConfig(self._config)
-        self._duckdb.create_connection_duckdb()
-        self._connection = self._duckdb.connection
-
-        self._s3_service = S3Service(self._config)
-
-        self._delta = DeltaService(self._config)
+        self._ssm_service = ssm_service
+        self._connection = connection
+        self._s3_service = s3_service
+        self._delta = delta_service
 
     def write_delta_gold_layer(self):
 
@@ -59,10 +61,7 @@ class GoldDimensionsIngestionProcessor:
                     "append",
                 )
 
-            if (
-                    not _parameter.first_load
-                    and _parameter.table_name not in "dim_date"
-            ):
+            if not _parameter.first_load and _parameter.table_name not in "dim_date":
                 print("Incremental Load")
 
                 delta_gold_dim = self._delta.read_deltalake(  # noqa
@@ -70,15 +69,9 @@ class GoldDimensionsIngestionProcessor:
                 )
 
                 sql_query = self._s3_service.get_sql_file_from_s3(
-                    _parameter.bucket_name,
-                    _parameter.sql_script_path_incremental
+                    _parameter.bucket_name, _parameter.sql_script_path_incremental
                 )
 
                 dataframe = self._connection.sql(sql_query).to_df()
 
                 self._delta.write_data_incremental_delta(_parameter, dataframe)
-
-
-_config = ConfigVariables()  # noqa
-gold_dimensions_processor = GoldDimensionsIngestionProcessor(_config)
-gold_dimensions_processor.write_delta_gold_layer()
