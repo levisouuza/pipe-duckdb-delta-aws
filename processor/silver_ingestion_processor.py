@@ -6,7 +6,6 @@ from service.delta_service import DeltaService
 from service.s3_service import S3Service
 from service.ssm_service import SsmService
 from constants.constants import TABLES_SILVER
-from factory.increment_insert_load_factory import IncrementInsertLoadFactory
 
 
 LAYER = "silver"
@@ -35,8 +34,8 @@ class SilverIngestionProcessor:
             self._config.buckets.bronze, "categories", True
         )
 
-        customer_delta = self._delta.read_deltalake(
-            self._config.buckets.bronze, "customer_delta", True
+        customers_delta = self._delta.read_deltalake(
+            self._config.buckets.bronze, "customers", True
         )
 
         order_items_delta = self._delta.read_deltalake(
@@ -63,34 +62,94 @@ class SilverIngestionProcessor:
             self._config.buckets.bronze, "stores", True
         )
 
-
         for table in TABLES_SILVER:
 
-            print(f"Start processing bronze ingestion table: {table}")
+            print(f"Start processing silver ingestion table: {table}")
 
             _parameter = Parameter.parse_obj(
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-            sql_query = self._s3_service.get_sql_file_from_s3(
-                _parameter.bucket_name_script_sql_path,
-                _parameter.sql_script_path
-            )
-
-            dataframe = self._connection.sql(sql_query).to_df()
-
             if _parameter.first_load:
                 print("First Load")
+
+                sql_query = self._s3_service.get_sql_file_from_s3(
+                    _parameter.bucket_name, _parameter.sql_script_path
+                )
+
+                dataframe = self._connection.sql(sql_query).to_df()
+
                 self._delta.write_delta_buckets(
-                    self._config.buckets.silver, dataframe, _parameter.table_name, "append"
+                    self._config.buckets.silver,
+                    dataframe,
+                    _parameter.table_name,
+                    "append",
                 )
 
             else:
                 print("Incremental Load")
-                incremental_load = (
-                    IncrementInsertLoadFactory.get_increment_insert_load_service(
-                        _parameter, self._config, self._delta, self._s3_service, self._connection
-                    )
+                sql_query = self._s3_service.get_sql_file_from_s3(
+                    _parameter.bucket_name, _parameter.sql_script_path_incremental
                 )
 
-                incremental_load.execute(dataframe=dataframe)
+                orders_sales_silver = None
+                if "orders_sales" == _parameter.table_name:
+                    orders_sales_silver = self._delta.read_deltalake(
+                        self._config.buckets.silver, "orders_sales", True
+                    )
+
+                dataframe = self._connection.sql(sql_query).to_df()
+
+                self._write_data_incremental_delta(_parameter, dataframe)
+
+    def _write_data_lake_first_load(self, parameter: Parameter):
+        sql_query = self._s3_service.get_sql_file_from_s3(
+            parameter.bucket_name, parameter.sql_script_path
+        )
+
+        dataframe = self._connection.sql(sql_query).to_df()
+
+        self._delta.write_delta_buckets(
+            self._config.buckets.silver,
+            dataframe,
+            parameter.table_name,
+            "append",
+        )
+
+    def _write_data_lake_incremental_load(self, parameter: Parameter):
+        sql_query = self._s3_service.get_sql_file_from_s3(
+            parameter.bucket_name, parameter.sql_script_path_incremental
+        )
+
+        orders_sales_silver = None
+        if "orders_sales" == parameter.table_name:
+            orders_sales_silver = self._delta.read_deltalake(
+                self._config.buckets.silver, "orders_sales", True
+            )
+
+        dataframe = self._connection.sql(sql_query).to_df()
+
+        self._write_data_incremental_delta(parameter, dataframe)
+
+
+    def _write_data_incremental_delta(self, parameter: Parameter, dataframe_to_ingest):
+        if parameter.incremental_data_df_validate and len(dataframe_to_ingest) > 0:
+            self._delta.write_delta_buckets(
+                parameter.bucket_name,
+                dataframe_to_ingest,
+                parameter.table_name,
+                "append",
+            )
+
+        if not parameter.incremental_data_df_validate:
+            self._delta.write_delta_buckets(
+                parameter.bucket_name,
+                dataframe_to_ingest,
+                parameter.table_name,
+                "append",
+            )
+
+
+_config = ConfigVariables()  # noqa
+silver_processor = SilverIngestionProcessor(_config)
+silver_processor.write_delta_silver_layer()
