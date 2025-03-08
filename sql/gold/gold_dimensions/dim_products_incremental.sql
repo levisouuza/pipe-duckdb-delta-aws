@@ -18,7 +18,7 @@ sk_products as
 ),
 dlt_gold_products as
 (
-    SELECT distinct product_id FROM delta_gold_products
+    SELECT distinct product_id FROM delta_gold_dim
 )
 SELECT * FROM sk_products
 WHERE product_id NOT IN (SELECT product_id FROM dlt_gold_products)

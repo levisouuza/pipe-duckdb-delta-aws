@@ -13,7 +13,7 @@ sk_customers as
     FROM customers
 ), dlt_gold_customers as
 (
-    SELECT distinct customer_id FROM delta_gold_customers
+    SELECT distinct customer_id FROM delta_gold_dim
 )
 
 SELECT * FROM sk_customers

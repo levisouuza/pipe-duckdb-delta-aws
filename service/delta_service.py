@@ -1,5 +1,6 @@
 from deltalake import DeltaTable, write_deltalake
 from model.config_variables import ConfigVariables
+from model.parameter import Parameter
 
 
 class DeltaService:
@@ -36,3 +37,21 @@ class DeltaService:
             return delta_table.to_pandas()
 
         return delta_table
+
+    def write_data_incremental_delta(self, parameter: Parameter, dataframe_to_ingest):
+        if parameter.incremental_data_df_validate and len(dataframe_to_ingest) > 0:
+            self.write_delta_buckets(
+                parameter.bucket_name,
+                dataframe_to_ingest,
+                parameter.table_name,
+                "append",
+            )
+
+        if not parameter.incremental_data_df_validate:
+            self.write_delta_buckets(
+                parameter.bucket_name,
+                dataframe_to_ingest,
+                parameter.table_name,
+                "append",
+            )
+

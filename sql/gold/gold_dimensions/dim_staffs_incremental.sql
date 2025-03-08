@@ -13,7 +13,7 @@ sk_staff as
     FROM staffs
 ), dlt_gold_staff as
 (
-    SELECT distinct staff_id FROM delta_gold_staff
+    SELECT distinct staff_id FROM delta_gold_dim
 )
 
 SELECT * FROM sk_staff
