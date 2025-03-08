@@ -1,12 +1,12 @@
 import json
-from model.config_variables import ConfigVariables
+
 from config.duckdb_config import DuckDbConfig
+from constants.constants import TABLES_GOLD_FACTS
+from model.config_variables import ConfigVariables
 from model.parameter import Parameter
 from service.delta_service import DeltaService
 from service.s3_service import S3Service
 from service.ssm_service import SsmService
-from constants.constants import TABLES_GOLD_FACTS
-
 
 LAYER = "gold"
 

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from model.config_variables import ConfigVariables
 from model.parameter import Parameter
 from service.delta_service import DeltaService

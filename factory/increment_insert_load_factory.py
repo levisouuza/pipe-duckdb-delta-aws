@@ -1,12 +1,11 @@
-from model.parameter import IncrementalInsertLoadType
 from model.config_variables import ConfigVariables
-from model.parameter import Parameter
-from service.incremental_insert_load_service import IncrementalInsertLoadService
+from model.parameter import IncrementalInsertLoadType, Parameter
+from service.delta_service import DeltaService
 from service.incremental_insert_load_merge_service import (
     IncrementalInsertLoadMergeService,
 )
+from service.incremental_insert_load_service import IncrementalInsertLoadService
 from service.incremental_insert_load_sql_service import IncrementalInsertLoadSqlService
-from service.delta_service import DeltaService
 from service.s3_service import S3Service
 
 
