@@ -18,7 +18,12 @@ class IncrementInsertLoadFactory:
 
     @classmethod
     def get_increment_insert_load_service(
-        cls, parameter: Parameter, config: ConfigVariables, delta_service: DeltaService, s3_service: S3Service, duck_connection
+        cls,
+        parameter: Parameter,
+        config: ConfigVariables,
+        delta_service: DeltaService,
+        s3_service: S3Service,
+        duck_connection,
     ) -> IncrementalInsertLoadService:
         if parameter.increment_insert_load_type in cls._increment_insert_load_type:
             return cls._increment_insert_load_type.get(
