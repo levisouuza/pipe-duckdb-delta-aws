@@ -34,6 +34,8 @@ Para executar este projeto, siga os passos abaixo:
 
 ## Principais Códigos com Delta Lake
 
+Segue exemplos de scripts que podemos utilizar no dia a dia para trabalhar com tabelas Delta Lake.
+
 ### Merge (Upsert)
 Realiza a fusão dos dados da tabela Delta com um DataFrame, atualizando registros existentes e inserindo novos quando não há correspondência.
 ```python
