@@ -4,8 +4,12 @@ from service.delta_service import DeltaService
 from service.incremental_insert_load_merge_service import (
     IncrementalInsertLoadMergeService,
 )
-from service.incremental_insert_load_service import IncrementalInsertLoadService
-from service.incremental_insert_load_sql_service import IncrementalInsertLoadSqlService
+from service.incremental_insert_load_service import (
+    IncrementalInsertLoadService
+)
+from service.incremental_insert_load_sql_service import (
+    IncrementalInsertLoadSqlService
+)
 from service.s3_service import S3Service
 
 
@@ -24,10 +28,13 @@ class IncrementInsertLoadFactory:
         s3_service: S3Service,
         duck_connection,
     ) -> IncrementalInsertLoadService:
-        if parameter.increment_insert_load_type in cls._increment_insert_load_type:
+        if (parameter.increment_insert_load_type
+                in cls._increment_insert_load_type):
+
             return cls._increment_insert_load_type.get(
                 parameter.increment_insert_load_type
             )(parameter, config, delta_service, s3_service, duck_connection)
         raise ValueError(
-            f"Unsupported Incremental Insert Load Type: {parameter.increment_insert_load_type}"
+            f"Unsupported Incremental Insert Load Type: "
+            f"{parameter.increment_insert_load_type}"
         )

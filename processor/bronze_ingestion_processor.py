@@ -33,14 +33,17 @@ class BronzeIngestionProcessor:
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-            uri = f"s3://{self._config.buckets.stage}/" f"delta-operations/{table}"
+            uri = (
+                f"s3://{self._config.buckets.stage}/delta-operations/{table}"
+            )
 
             print(f"uri stage path: {uri}")
 
             _parameter.uri_s3_table = uri
 
             dataframe = self._connection.sql(
-                f"select * from read_csv('{_parameter.uri_s3_table}/{table}.csv')"
+                f"select * from "
+                f"read_csv('{_parameter.uri_s3_table}/{table}.csv')"
             ).to_df()
 
             if _parameter.first_load:
@@ -52,7 +55,7 @@ class BronzeIngestionProcessor:
             else:
                 print("Incremental Load")
                 incremental_load = (
-                    IncrementInsertLoadFactory.get_increment_insert_load_service(
+                    IncrementInsertLoadFactory.get_increment_insert_load_service(  # noqa
                         _parameter,
                         self._config,
                         self._delta,

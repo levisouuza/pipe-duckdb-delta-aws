@@ -35,8 +35,12 @@ class DuckDbConfig:
             self.connection.execute(f"LOAD {extension};")
 
     def _configs_http_endpoint(self):
-        self.connection.execute(f"SET s3_endpoint='{self._config.s3_endpoint}';")
-        self.connection.execute(f"SET http_retries = {self._config.http_retries};")
+        self.connection.execute(
+            f"SET s3_endpoint='{self._config.s3_endpoint}';"
+        )
+        self.connection.execute(
+            f"SET http_retries = {self._config.http_retries};"
+        )
         self.connection.execute(
             f"SET http_retry_backoff = {self._config.http_retry_backoff};"
         )

@@ -26,38 +26,38 @@ class GoldFactsIngestionProcessor:
 
     def write_delta_gold_layer(self):
 
-        print(f"Extract orders_sales silver layer delta table")
-        orders_sales = self._delta.read_deltalake(
+        print("Extract orders_sales silver layer delta table")
+        orders_sales = self._delta.read_deltalake(  # noqa
             self._config.buckets.silver, "orders_sales", True
         )
 
-        print(f"Extract stocks_snapshot silver layer delta table")
-        stocks_snapshot = self._delta.read_deltalake(
+        print("Extract stocks_snapshot silver layer delta table")
+        stocks_snapshot = self._delta.read_deltalake(  # noqa
             self._config.buckets.silver, "stocks_snapshot", True
         )
 
-        print(f"Extract dim_products gold layer delta table")
-        dim_products = self._delta.read_deltalake(
+        print("Extract dim_products gold layer delta table")
+        dim_products = self._delta.read_deltalake(  # noqa
             self._config.buckets.gold, "dim_products", True
         )
 
-        print(f"Extract dim_customers gold layer delta table")
-        dim_customers = self._delta.read_deltalake(
+        print("Extract dim_customers gold layer delta table")
+        dim_customers = self._delta.read_deltalake(  # noqa
             self._config.buckets.gold, "dim_customers", True
         )
 
-        print(f"Extract dim_staffs gold layer delta table")
-        dim_staffs = self._delta.read_deltalake(
+        print("Extract dim_staffs gold layer delta table")
+        dim_staffs = self._delta.read_deltalake(  # noqa
             self._config.buckets.gold, "dim_staffs", True
         )
 
-        print(f"Extract dim_stores gold layer delta table")
-        dim_stores = self._delta.read_deltalake(
+        print("Extract dim_stores gold layer delta table")
+        dim_stores = self._delta.read_deltalake(  # noqa
             self._config.buckets.gold, "dim_stores", True
         )
 
-        print(f"Extract dim_date gold layer delta table")
-        dim_date = self._delta.read_deltalake(
+        print("Extract dim_date gold layer delta table")
+        dim_date = self._delta.read_deltalake(  # noqa
             self._config.buckets.gold, "dim_date", True
         )
 
@@ -87,15 +87,19 @@ class GoldFactsIngestionProcessor:
 
                 print("Finish first load")
 
-            if not _parameter.first_load and _parameter.table_name not in "dim_date":
+            if (
+                    not _parameter.first_load
+                    and _parameter.table_name not in "dim_date"
+            ):
                 print("Incremental Load")
 
-                delta_gold_fact = self._delta.read_deltalake(
+                delta_gold_fact = self._delta.read_deltalake(  # noqa
                     self._config.buckets.gold, _parameter.table_name, True
                 )
 
                 sql_query = self._s3_service.get_sql_file_from_s3(
-                    _parameter.bucket_name, _parameter.sql_script_path_incremental
+                    _parameter.bucket_name,
+                    _parameter.sql_script_path_incremental
                 )
 
                 dataframe = self._connection.sql(sql_query).to_df()

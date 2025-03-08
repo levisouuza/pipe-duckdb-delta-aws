@@ -31,7 +31,7 @@ class GoldDimensionsIngestionProcessor:
             f"in bucket {self._config.buckets.silver}"
         )
 
-        orders_sales = self._delta.read_deltalake(
+        orders_sales = self._delta.read_deltalake(  # noqa
             self._config.buckets.silver, "orders_sales", True
         )
 
@@ -59,15 +59,19 @@ class GoldDimensionsIngestionProcessor:
                     "append",
                 )
 
-            if not _parameter.first_load and _parameter.table_name not in "dim_date":
+            if (
+                    not _parameter.first_load
+                    and _parameter.table_name not in "dim_date"
+            ):
                 print("Incremental Load")
 
-                delta_gold_dim = self._delta.read_deltalake(
+                delta_gold_dim = self._delta.read_deltalake(  # noqa
                     self._config.buckets.gold, _parameter.table_name, True
                 )
 
                 sql_query = self._s3_service.get_sql_file_from_s3(
-                    _parameter.bucket_name, _parameter.sql_script_path_incremental
+                    _parameter.bucket_name,
+                    _parameter.sql_script_path_incremental
                 )
 
                 dataframe = self._connection.sql(sql_query).to_df()

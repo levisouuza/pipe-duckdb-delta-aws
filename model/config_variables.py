@@ -36,7 +36,9 @@ class ConfigVariables(BaseSettings):
                     ),
                 }
             except json.JSONDecodeError as error:
-                raise ValueError(f"Erro ao decodificar JSON dos buckets: {error}")
+                raise ValueError(
+                    f"Erro ao decodificar JSON dos buckets: {error}"
+                )
         return values
 
     def get_aws_credentials(self):
