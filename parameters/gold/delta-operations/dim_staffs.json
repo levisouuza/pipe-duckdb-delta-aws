@@ -1,0 +1,9 @@
+{
+  "table_name": "dim_staffs" ,
+  "layer": "gold",
+  "first_load": true,
+  "increment_insert_load_type": "sql",
+  "bucket_name": "development-test-levis-gold",
+  "sql_script_path": "sql/gold_dimensions/dim_staffs.sql",
+  "sql_script_path_incremental": "sql/gold_dimensions/dim_staffs_incremental.sql"
+}
