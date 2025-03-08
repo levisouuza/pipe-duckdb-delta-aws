@@ -75,10 +75,6 @@ class GoldDimensionsIngestionProcessor:
                 self._delta.write_data_incremental_delta(_parameter, dataframe)
 
 
-
-
-
-
 _config = ConfigVariables()  # noqa
 gold_dimensions_processor = GoldDimensionsIngestionProcessor(_config)
 gold_dimensions_processor.write_delta_gold_layer()
