@@ -26,34 +26,44 @@ class GoldDimensionsIngestionProcessor:
         self._delta = DeltaService(self._config)
 
     def write_delta_gold_layer(self):
+
+        print(
+            f"reading delta lake table orders_sales "
+            f"in bucket {self._config.buckets.silver}"
+        )
+        orders_sales = self._delta.read_deltalake(
+            self._config.buckets.silver, "orders_sales", True
+        )
+
         for table in TABLES_GOLD_DIMENSIONS:
 
-            print(f"Start processing bronze ingestion table: {table}")
+            print(f"Start processing gold ingestion table: {table}")
 
             _parameter = Parameter.parse_obj(
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-            sql_query = self._s3_service.get_sql_file_from_s3(
-                _parameter.bucket_name_script_sql_path,
-                _parameter.sql_script_path
-            )
-
-            dataframe = self._connection.sql(sql_query).to_df()
 
             if _parameter.first_load:
                 print("First Load")
+
+                sql_query = self._s3_service.get_sql_file_from_s3(
+                    _parameter.bucket_name, _parameter.sql_script_path
+                )
+
+                dataframe = self._connection.sql(sql_query).to_df()
+
                 self._delta.write_delta_buckets(
-                    self._config.buckets.silver, dataframe, _parameter.table_name, "append"
+                    self._config.buckets.gold,
+                    dataframe,
+                    _parameter.table_name,
+                    "append",
                 )
 
-            else:
+            if not _parameter.first_load and _parameter.table_name not in "dim_date":
                 print("Incremental Load")
-                incremental_load = (
-                    IncrementInsertLoadFactory.get_increment_insert_load_service(
-                        _parameter, self._config, self._delta, self._s3_service, self._connection
-                    )
-                )
 
-                incremental_load.execute(dataframe=dataframe)
 
+_config = ConfigVariables()  # noqa
+gold_dimensions_processor = GoldDimensionsIngestionProcessor(_config)
+gold_dimensions_processor.write_delta_gold_layer()

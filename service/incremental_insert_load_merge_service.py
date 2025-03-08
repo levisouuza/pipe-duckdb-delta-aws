@@ -7,11 +7,16 @@ from service.s3_service import S3Service
 
 class IncrementalInsertLoadMergeService(IncrementalInsertLoadService):
     def __init__(
-        self, parameter: Parameter, config: ConfigVariables, delta_service: DeltaService, s3_service: S3Service, duck_connection
+        self,
+        parameter: Parameter,
+        config: ConfigVariables,
+        delta_service: DeltaService,
+        s3_service: S3Service,
+        duck_connection,
     ):
         super().__init__(parameter, config, delta_service, s3_service, duck_connection)
 
-    def execute(self, dataframe = None, delta_table = None):
+    def execute(self, dataframe=None, delta_table=None):
 
         table_delta_response = self.delta_service.read_deltalake(
             self.config.buckets.bronze, self.parameter.table_name

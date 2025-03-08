@@ -1,0 +1,9 @@
+{
+  "table_name": "orders" ,
+  "layer": "bronze",
+  "first_load": true,
+  "increment_insert_load_type": "sql",
+  "bucket_name": "development-test-levis-bronze",
+  "sql_script_path_incremental": "sql/order_data_incremental.sql",
+  "replace_uri": true
+}

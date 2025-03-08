@@ -14,6 +14,8 @@ class Parameter(BaseModel):
     layer: Optional[str] = None
     first_load: Optional[bool] = None
     increment_insert_load_type: Optional[IncrementalInsertLoadType]
-    bucket_name_script_sql_path: Optional[str] = None
+    bucket_name: Optional[str] = None
     sql_script_path: Optional[str] = None
+    sql_script_path_incremental: Optional[str] = None
     replace_uri: Optional[bool] = False
+    incremental_data_df_validate: Optional[bool] = True

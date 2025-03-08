@@ -1,0 +1,6 @@
+{
+  "table_name": "brands" ,
+  "layer": "bronze",
+  "first_load": true,
+  "increment_insert_load_type": "merge"
+}

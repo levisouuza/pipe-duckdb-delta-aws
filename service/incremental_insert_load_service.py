@@ -7,7 +7,12 @@ from service.s3_service import S3Service
 
 class IncrementalInsertLoadService(ABC):
     def __init__(
-        self, parameter: Parameter, config: ConfigVariables, delta_service: DeltaService, s3_service: S3Service, duck_connection
+        self,
+        parameter: Parameter,
+        config: ConfigVariables,
+        delta_service: DeltaService,
+        s3_service: S3Service,
+        duck_connection,
     ):
         self.parameter = parameter
         self.config = config
@@ -16,5 +21,5 @@ class IncrementalInsertLoadService(ABC):
         self.duck_connection = duck_connection
 
     @abstractmethod
-    def execute(self, dataframe = None, delta_table = None):
+    def execute(self, dataframe=None, delta_table=None):
         pass

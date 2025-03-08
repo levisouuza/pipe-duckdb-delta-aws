@@ -33,10 +33,7 @@ class BronzeIngestionProcessor:
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-            uri = (
-                f"s3://{self._config.buckets.stage}/"
-                f"delta-operations/{table}"
-            )
+            uri = f"s3://{self._config.buckets.stage}/" f"delta-operations/{table}"
 
             print(f"uri stage path: {uri}")
 
@@ -56,7 +53,11 @@ class BronzeIngestionProcessor:
                 print("Incremental Load")
                 incremental_load = (
                     IncrementInsertLoadFactory.get_increment_insert_load_service(
-                        _parameter, self._config, self._delta, self._s3_service, self._connection
+                        _parameter,
+                        self._config,
+                        self._delta,
+                        self._s3_service,
+                        self._connection,
                     )
                 )
 
@@ -64,6 +65,7 @@ class BronzeIngestionProcessor:
 
         self._connection.close()
 
+
 _config = ConfigVariables()  # noqa
-stage_processor = BronzeIngestionProcessor(_config)
-stage_processor.write_delta_bronze_layer()
+bronze_processor = BronzeIngestionProcessor(_config)
+bronze_processor.write_delta_bronze_layer()

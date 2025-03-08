@@ -9,7 +9,7 @@ TABLES_BRONZE = [
     "stocks",
     "stores",
     "order_items",
-    "orders"
+    "orders",
 ]
 
 TABLES_SILVER = ["stocks_snapshot", "orders_sales"]
@@ -19,10 +19,7 @@ TABLES_GOLD_DIMENSIONS = [
     "dim_customers",
     "dim_staffs",
     "dim_stores",
-    "dim_date"
+    "dim_date",
 ]
 
-TABLES_GOLD_FACTS = [
-    "fact_sales",
-    "fact_stocks"
-]
+TABLES_GOLD_FACTS = ["fact_sales", "fact_stocks"]

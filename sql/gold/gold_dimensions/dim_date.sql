@@ -1,17 +1,16 @@
-with tempo as
-(
-select
-    cast(strftime(generate_series, '%Y%m%d') as int) as date_id
-    generate_series as date,
-    ,year(generate_series) as year
-    ,month(generate_series) as month
-    ,day(generate_series) as day
-from generate_series(DATE '2010-01-01', DATE '2030-12-31', INTERVAL '1' DAY)
-), sk_date as
-(
-    select
-        row_number() over (order by date_id) as date_sk,
+WITH tempo AS (
+    SELECT 
+        CAST(strftime('%Y%m%d', generate_series) AS INT) AS date_id,
+        generate_series AS date,
+        year(generate_series) AS year,
+        month(generate_series) AS month,
+        day(generate_series) AS day
+    FROM generate_series(DATE '2010-01-01', DATE '2030-12-31', INTERVAL 1 DAY)
+), 
+sk_date AS (
+    SELECT 
+        row_number() OVER (ORDER BY date_id) AS date_sk,
         *
-    from tempo
+    FROM tempo
 )
-select * from sk_date
+SELECT * FROM sk_date;
