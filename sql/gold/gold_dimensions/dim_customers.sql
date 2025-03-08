@@ -1,15 +1,15 @@
 WITH customers as (
 SELECT DISTINCT
-    customers_id,
-    customers_name
+    customer_id,
+    customer_name
 FROM orders_sales
 ),
 sk_customers as
 (
     SELECT
-        row_number() over (order by customers_id) as customer_sk,
-        customers_id,
-        customers_name
+        row_number() over (order by customer_id) as customer_sk,
+        customer_id,
+        customer_name
     FROM customers
 )
 
