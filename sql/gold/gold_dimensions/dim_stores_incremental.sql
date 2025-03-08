@@ -13,7 +13,7 @@ sk_store as
     FROM stores
 ), dlt_gold_store as
 (
-    SELECT distinct store_id FROM delta_gold_store
+    SELECT distinct store_id FROM delta_gold_dim
 )
 
 SELECT * FROM sk_store
