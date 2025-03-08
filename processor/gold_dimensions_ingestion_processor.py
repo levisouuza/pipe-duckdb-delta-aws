@@ -42,7 +42,6 @@ class GoldDimensionsIngestionProcessor:
                 json.loads(self._ssm_service.get_parameter(LAYER, table))
             )
 
-
             if _parameter.first_load:
                 print("First Load")
 
