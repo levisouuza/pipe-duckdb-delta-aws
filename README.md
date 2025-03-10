@@ -15,7 +15,7 @@ Para executar este projeto, siga os passos abaixo:
 
 1. Clone o repositório:
    ```bash
-   git clone <https://github.com/levisouuza/pipe-duckdb-delta-aws.gitO>
+   git clone <https://github.com/levisouuza/pipe-duckdb-delta-aws.git>
    cd <pipe-duckdb-delta-aws>
    ```
 2. Crie um ambiente virtual:
