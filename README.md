@@ -3,9 +3,9 @@
 ## Motivação
 O avanço das arquiteturas de dados levou à popularização do conceito de Data Lakehouse, combinando a flexibilidade dos Data Lakes com a governança e desempenho dos Data Warehouses. Tecnologias como **Delta Lake** e **DuckDB** vêm se destacando nesse contexto, oferecendo maior confiabilidade, versionamento de dados e processamento otimizado para análises interativas.
 
-Este projeto surgiu como uma extensão da minha experiência ao realizar o curso de [Data Lakehouse com Delta Lake, DuckDB e Azure Data Lake-Gen2](https://www.udemy.com/course/criando-um-lakehouse-com-python-deltalake-duckdb-e-azure-data-lake-sql/). Originalmente, o curso utilizava **Microsoft Azure**, o que representou minha primeira experiência prática com esse provedor de cloud. Como aprimoramento, decidi reconstruir a solução na **AWS**, onde atuo no dia a dia, para oferecer uma alternativa para profissionais que desejam explorar o mesmo conceito em um ambiente diferente.
+Este projeto surgiu como uma extensão da minha experiência ao realizar o curso de [Data Lakehouse com Delta Lake, DuckDB e Azure Data Lake-Gen2](https://www.udemy.com/course/criando-um-lakehouse-com-python-deltalake-duckdb-e-azure-data-lake-sql/). Originalmente, o curso utilizava Microsoft Azure, o que representou minha primeira experiência prática com esse provedor de cloud. Como aprimoramento, decidi reconstruir a solução na **AWS**, onde atuo no dia a dia, para oferecer uma alternativa para profissionais que desejam explorar o mesmo conceito em um ambiente diferente.
 
-Além da migração para AWS, ampliei a solução incorporando outras tecnologias de analytics, orquestração com Airflow e aprimorando o código com **boas práticas de engenharia de software**, garantindo maior modularidade, legibilidade e eficiência.
+Além da migração para AWS, ampliei a solução incorporando outras tecnologias de analytics, orquestração com **Airflow** e aprimorando o código com **boas práticas de engenharia de software**, garantindo maior modularidade, legibilidade e eficiência.
 
 ## Arquitetura da Solução
 ![pipe-aws-duckdb-delta.drawio](pipe-aws-duckdb-delta.drawio.png)
