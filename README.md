@@ -8,7 +8,7 @@ Este projeto surgiu como uma extensão da minha experiência ao realizar o curso
 Além da migração para AWS, ampliei a solução incorporando outras tecnologias de analytics, orquestração com Airflow e aprimorando o código com **boas práticas de engenharia de software**, garantindo maior modularidade, legibilidade e eficiência.
 
 ## Arquitetura da Solução
-![pipe-aws-duckdb-delta.drawio.png](pipe-aws-duckdb-delta.drawio.png)
+![pipe-aws-duckdb-delta.drawio](pipe-aws-duckdb-delta.drawio.png)
 
 ## Getting Started
 Para executar este projeto, siga os passos abaixo:
