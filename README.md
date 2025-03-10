@@ -5,18 +5,18 @@ O avanço das arquiteturas de dados levou à popularização do conceito de Data
 
 Este projeto surgiu como uma extensão da minha experiência ao realizar o curso de [Data Lakehouse com Delta Lake, DuckDB e Azure Data Lake-Gen2](https://www.udemy.com/course/criando-um-lakehouse-com-python-deltalake-duckdb-e-azure-data-lake-sql/). Originalmente, o curso utilizava **Microsoft Azure**, o que representou minha primeira experiência prática com esse provedor de cloud. Como aprimoramento, decidi reconstruir a solução na **AWS**, onde atuo no dia a dia, para oferecer uma alternativa para profissionais que desejam explorar o mesmo conceito em um ambiente diferente.
 
-Além da migração para AWS, ampliei a solução incorporando outras tecnologias de analytics e aprimorando o código com **boas práticas de engenharia de software**, garantindo maior modularidade, legibilidade e eficiência.
+Além da migração para AWS, ampliei a solução incorporando outras tecnologias de analytics, orquestração com Airflow e aprimorando o código com **boas práticas de engenharia de software**, garantindo maior modularidade, legibilidade e eficiência.
 
 ## Arquitetura da Solução
-_(Adicionar diagrama da arquitetura aqui)_
+![pipe-aws-duckdb-delta.drawio.png](pipe-aws-duckdb-delta.drawio.png)
 
 ## Getting Started
 Para executar este projeto, siga os passos abaixo:
 
 1. Clone o repositório:
    ```bash
-   git clone <URL_DO_REPOSITORIO>
-   cd <NOME_DO_REPOSITORIO>
+   git clone <https://github.com/levisouuza/pipe-duckdb-delta-aws.gitO>
+   cd <pipe-duckdb-delta-aws>
    ```
 2. Crie um ambiente virtual:
    ```bash
