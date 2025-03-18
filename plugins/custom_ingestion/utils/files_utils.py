@@ -1,7 +1,6 @@
 import os
 
-from constants.constants import LOCAL_FOLDER_DATASETS
-from utils.date_utils import get_yesterday_date
+from custom_ingestion.constants.constants import LOCAL_FOLDER_DATASETS
 
 
 def get_files_in_raw_datasets():

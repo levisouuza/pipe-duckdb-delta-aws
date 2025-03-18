@@ -1,6 +1,6 @@
 import boto3
 
-from model.config_variables import ConfigVariables
+from custom_ingestion.model.config_variables import ConfigVariables
 
 
 class AwsService:

@@ -1,11 +1,11 @@
 import json
 
-from constants.constants import TABLES_SILVER
-from model.config_variables import ConfigVariables
-from model.parameter import Parameter
-from service.delta_service import DeltaService
-from service.s3_service import S3Service
-from service.ssm_service import SsmService
+from custom_ingestion.constants.constants import TABLES_SILVER
+from custom_ingestion.model.config_variables import ConfigVariables
+from custom_ingestion.model.parameter import Parameter
+from custom_ingestion.service.delta_service import DeltaService
+from custom_ingestion.service.s3_service import S3Service
+from custom_ingestion.service.ssm_service import SsmService
 
 LAYER = "silver"
 

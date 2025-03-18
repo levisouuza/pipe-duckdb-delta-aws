@@ -1,16 +1,16 @@
-from model.config_variables import ConfigVariables
-from model.parameter import IncrementalInsertLoadType, Parameter
-from service.delta_service import DeltaService
-from service.incremental_insert_load_merge_service import (
+from custom_ingestion.model.config_variables import ConfigVariables
+from custom_ingestion.model.parameter import IncrementalInsertLoadType, Parameter
+from custom_ingestion.service.delta_service import DeltaService
+from custom_ingestion.service.incremental_insert_load_merge_service import (
     IncrementalInsertLoadMergeService,
 )
-from service.incremental_insert_load_service import (
+from custom_ingestion.service.incremental_insert_load_service import (
     IncrementalInsertLoadService
 )
-from service.incremental_insert_load_sql_service import (
+from custom_ingestion.service.incremental_insert_load_sql_service import (
     IncrementalInsertLoadSqlService
 )
-from service.s3_service import S3Service
+from custom_ingestion.service.s3_service import S3Service
 
 
 class IncrementInsertLoadFactory:
