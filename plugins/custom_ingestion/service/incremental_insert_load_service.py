@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from model.config_variables import ConfigVariables
-from model.parameter import Parameter
-from service.delta_service import DeltaService
-from service.s3_service import S3Service
+from custom_ingestion.model.config_variables import ConfigVariables
+from custom_ingestion.model.parameter import Parameter
+from custom_ingestion.service.delta_service import DeltaService
+from custom_ingestion.service.s3_service import S3Service
 
 
 class IncrementalInsertLoadService(ABC):

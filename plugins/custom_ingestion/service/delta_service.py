@@ -1,7 +1,7 @@
 from deltalake import DeltaTable, write_deltalake
 
-from model.config_variables import ConfigVariables
-from model.parameter import Parameter
+from custom_ingestion.model.config_variables import ConfigVariables
+from custom_ingestion.model.parameter import Parameter
 
 
 class DeltaService:

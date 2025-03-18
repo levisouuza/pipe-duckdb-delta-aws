@@ -1,7 +1,7 @@
 from botocore.client import ClientError
 
-from model.config_variables import ConfigVariables
-from service.aws_service import AwsService
+from custom_ingestion.model.config_variables import ConfigVariables
+from custom_ingestion.service.aws_service import AwsService
 
 
 class SsmService(AwsService):
