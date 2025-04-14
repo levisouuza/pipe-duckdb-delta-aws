@@ -1,6 +1,6 @@
 from airflow.plugins_manager import AirflowPlugin
-from processor.ingestion_processor import IngestionProcessor
-from model.config_variables import ConfigVariables
+from custom_ingestion.processor.ingestion_processor import IngestionProcessor
+from custom_ingestion.model.config_variables import ConfigVariables
 
 # Definição do plugin
 class CustomIngestionPlugin(AirflowPlugin):
