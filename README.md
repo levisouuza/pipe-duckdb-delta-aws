@@ -10,6 +10,10 @@ Além da migração para AWS, ampliei a solução incorporando outras tecnologia
 ## Arquitetura da Solução
 ![pipe-aws-duckdb-delta.drawio](pipe-aws-duckdb-delta.drawio.png)
 
+## Airflow Dag
+
+![airflow_dag_example.png](airflow_dag_example.png)
+
 ## Getting Started
 Para executar este projeto, siga os passos abaixo:
 
@@ -26,10 +30,6 @@ Para executar este projeto, siga os passos abaixo:
 3. Instale as dependências:
    ```bash
    pip install -r requirements.txt
-   ```
-4. Execute o pipeline de ingestão de dados:
-   ```bash
-   python main.py
    ```
 
 ## Principais Códigos com Delta Lake

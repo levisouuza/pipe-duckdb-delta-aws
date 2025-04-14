@@ -4,7 +4,7 @@ from airflow.operators.bash import BashOperator
 from datetime import datetime
 
 dag =  DAG('airflow_dag_test', description="Nossa primeira DAG",
-        schedule_interval=None,start_date=datetime(2023,3,5),
+        schedule=None,start_date=datetime(2023,3,5),
         catchup=False)
 
 task1 = BashOperator(task_id="tsk1",bash_command="sleep 5",dag=dag )

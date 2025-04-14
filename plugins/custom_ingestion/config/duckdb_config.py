@@ -10,7 +10,7 @@ class DuckDbConfig:
     def create_connection_duckdb(self):
         self.connection = duckdb.connect(database=":memory:")
 
-        self.connection.execute("SET home_directory='./././duckdb';")
+        self.connection.execute("SET home_directory='.././duckdb';")
 
         self._install_and_load_extension()
         self._configs_http_endpoint()
